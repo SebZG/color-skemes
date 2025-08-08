@@ -17,6 +17,41 @@
 
 <body>
 
+    <header>
+        <h1 id="title" class="title">Color Skemes</h1>
+    </header>
+
+    <main>
+        <section id="gen-container" class="gen-container">
+
+            <form id="scheme-form" class="scheme-form">
+                <input id="seed-picker" class="seed-picker" type="color">
+                <select name="mode" id="mode" class="mode">
+                    <option value="" selected="selected">Pick a mode</option>
+                </select>
+                <input id="count" class="count" type="number" name="count" value="0">
+                <button id="btn-get-scheme" class="btn-get-scheme" type="submit">Generate</button>
+            </form>
+
+            <div id="scheme-wrapper" class="scheme-wrapper">
+                <div class="color-item"></div>
+                <div class="color-item"></div>
+                <div class="color-item"></div>
+                <div class="color-item"></div>
+                <div class="color-item"></div>
+            </div>
+
+            <div id="hex-code-wrapper" class="hex-code-wrapper">
+                <div class="hex-code"></div>
+                <div class="hex-code"></div>
+                <div class="hex-code"></div>
+                <div class="hex-code"></div>
+                <div class="hex-code"></div>
+            </div>
+
+        </section>
+    </main>
+
     <script src="index.js" type="module"></script>
 </body>
 
