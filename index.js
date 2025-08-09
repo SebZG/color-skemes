@@ -1,7 +1,5 @@
 const modes = ["Monochrome", "Monochrome-dark", "Monochrome-light", "Analogic", "Complement", "Analogic-complement", "Triad", "Quad"]
 
-// GET https://www.thecolorapi.com/scheme?hex=0047AB&rgb=0,71,171&hsl=215,100%,34%&cmyk=100,58,0,33&format=html&mode=analogic&count=6
-
 const form = document.querySelector("#scheme-form");
 const seedPicker = document.querySelector("#seed-picker");
 const modeSelect = document.querySelector("#mode");
@@ -15,14 +13,65 @@ for (let mode of modes) {
     modeSelect.options[modeSelect.options.length] = new Option(mode, mode.toLowerCase());
 }
 
-colorItem[0].style.backgroundColor = "black";
-colorItem[1].style.backgroundColor = "yellow";
-colorItem[2].style.backgroundColor = "red";
-colorItem[3].style.backgroundColor = "blue";
-colorItem[4].style.backgroundColor = "green";
+const url = "https://www.thecolorapi.com/scheme"
+const format = "json"
+let hex = ""
+let mode = ""
+let count = ""
 
-hexCode[0].textContent = "#ffffff"
-hexCode[1].textContent = "#ffffff"
-hexCode[2].textContent = "#ffffff"
-hexCode[3].textContent = "#ffffff"
-hexCode[4].textContent = "#ffffff"
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    const data = {
+        seed: formData.get("seed"),
+        mode: formData.get("mode"),
+        count: formData.get("count")
+    }
+
+    hex = data.seed.replace("#", "");
+    mode = data.mode;
+    count = data.count;
+
+    fetch(`${url}?hex=${hex}&format=${format}&mode=${mode}&count=${count}`)
+        .then(res => res.json())
+        .then(data => renderColors(data));
+});
+
+function renderColors({ colors }) {
+    console.log(colors)
+    schemeWrapper.innerHTML = colors.map(({ hex }) => `
+        <div class="color-item" style="background-color: ${hex.value}"></div>
+    `).join("");
+
+    hexCodeWrapper.innerHTML = colors.map(({ hex }) => `
+        <div class="hex-code">${hex.value}</div>
+    `).join("");
+
+    syncScroll();
+}
+
+function syncScroll() {
+    let isSyncing = false;
+
+    const syncScroll = (source, target) => {
+        if (isSyncing) return;
+        isSyncing = true;
+        target.scrollLeft = source.scrollLeft;
+        requestAnimationFrame(() => {
+            isSyncing = false;
+        });
+    };
+
+    // Remove any existing event listeners first
+    const schemeScroll = () => syncScroll(schemeWrapper, hexCodeWrapper);
+    const hexScroll = () => syncScroll(hexCodeWrapper, schemeWrapper);
+    
+    schemeWrapper.removeEventListener('scroll', schemeScroll);
+    hexCodeWrapper.removeEventListener('scroll', hexScroll);
+
+    // Add new event listeners
+    schemeWrapper.addEventListener('scroll', schemeScroll);
+    hexCodeWrapper.addEventListener('scroll', hexScroll);
+}
